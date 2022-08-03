@@ -1,0 +1,45 @@
+<style>
+    td {
+        width: 20%;
+    }
+</style>
+<div style="width: 98%;padding-left: 2%;padding-top: 0.5%;">
+    <form action="/gerenciamento/mensagem/" method="post">
+        <input type='hidden' name="tipo" value="ar">
+        <div class="row mt-4">
+            <div class="col">
+                <label class='titulo-beneficio fw-bold'>Descrição</label><br>
+                <textarea class="form-control" cols="30" rows="4" name="descricao"></textarea>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn"><i class='bi bi-plus d-flex align-items-center'
+                        style="font-size: 40px;margin-top: 20px;"></i></button>
+            </div>
+        </div>
+    </form>
+    {{#if mensagem}}
+    <div class="card mt-4">
+        <div class="card-body">
+            <label class='titulo-inicio' style="cursor: none;font-size: 30px;">Mensagens</label>
+            <table>
+                <tr>
+                    <td class="col">
+                        <label class='col-form-label fw-bold'>Descrição</label><br>
+                    </td>
+                </tr>
+                {{#each mensagem}}
+                <tr>
+                    <td style="width: 80%;" class="col">
+                        <label class='titulo-beneficio'>{{descricao}}</label>
+                    </td>
+                    <td class="col">
+                        <a href="/gerenciamento/deletamensagem/{{_id}}"><i class='bi bi-x-circle'
+                                style="color: orangered;font-size: 24px;"></i></a>
+                    </td>
+                </tr>
+                {{/each}}
+            </table>
+        </div>
+        {{/if}}
+    </div>
+</div>

@@ -1,0 +1,59 @@
+<style>
+    .container {
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+    }
+
+    .border {
+        border: 1px solid '#e3e3e3';
+        font-size: 15px;
+    }
+
+    .align {
+        background-color: #847AF4;
+        justify-content: center;
+        flex-direction: row;
+        display: flex;
+        padding: 10px;
+    }
+
+    .button {
+        background-color: #847AF4;
+    }
+</style>
+{{#if obsTitle}}
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <img src="..." class="rounded me-2" alt="...">
+            <strong class="me-auto">{{obstitle}}</strong>
+            <small>{{obsDesc}}</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close">
+            </button>
+        </div>
+        <div class="toast-body">
+            {{obsText}}
+        </div>
+    </div>
+</div>
+{{/if}}
+<div class="container">
+    <form action="/gerenciamento/obsinstalacao" method="post">
+        <input name="id" value="{{idprj}}" type="hidden">
+        <div class="card" style="padding: 10px;">
+            <div class="h3">Observação da Instalação</div>
+            <textarea name="obsins" cols="30" rows="18" class="border">
+                {{observacao}}
+            </textarea>
+        </div>
+        <div class="align">
+            <button type="submit" class='button'>
+                <i class="icone-button-obra bi bi-save2"></i>
+            </button>
+            <a href='/dashboard' style="padding-right: 10px;">
+                <i class="icone-button-obra bi bi-arrow-left-circle"></i>
+            </a>
+        </div>
+    </form>
+</div>

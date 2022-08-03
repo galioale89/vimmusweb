@@ -1,0 +1,708 @@
+<style>
+    table {
+        font-size: 15px;
+    }
+
+    a {
+        cursor: pointer;
+    }
+
+    .swal-wide {
+        width: 850px !important;
+    }
+</style>
+
+<script src="/js/uteis.js"></script>
+<script>
+    setTimeout(function () {
+        window.location.reload(1);
+    }, 180000); // 3 minutos
+</script>
+
+
+<div style="width: 99%;padding-left: 15px;">
+    <div class="row">
+        <div class="col-md-5">
+            <label class='col-form-label mt-2' id='saudacao'></label>
+        </div>
+        <div class="col">
+            <div style="display: flex">
+                {{!-- BUSCA DE CLIENTES --}}
+                <form method="POST" action="/cliente/buscaNomeCliente">
+                    <div style='display: block;flex-direction: row;justify-content: center;margin-top: 15px;'>
+                        <input type="text" class="typeahead mb-4" id="nome" name="nome" placeholder="Nome do Cliente">
+                        <button type="submit" style="height: 30px;position: absolute;"
+                            class="btn bnt-sm btn-primary">Ir</button>
+                    </div>
+                </form>
+                <div style="margin-top: 10px;">
+                    <a href="#" class="menu-open">
+                        <i style="font-size: 30px;" class="bi bi-arrow-bar-left"></i>
+                    </a>
+                    <div class="overlay"></div>
+                    <div class="menu">
+                        <a href="#" class="menu-close"
+                            style="margin-top: 30px;display: flex;flex-direction: row;justify-content: left;"><i
+                                class="bi bi-arrow-bar-right"></i></a>
+                        <ul>
+                            <li>
+                                <a href='/usuario/editar/{{id}}' class="botao_minhaconta mb-1"
+                                    style="color: #9b9b9b;">Minha
+                                    Conta</a><br>
+                            </li>
+                            {{#if funpro}}
+                            <li>
+                                <a href='/cliente/consulta/' class='botao_menu mb-1'>Clientes</a>
+                            </li>
+                            {{else}}
+                            {{#if funges}}
+                            <li>
+                                <a href='/pessoa/consulta/' class='botao_menu mb-1 mt-1'>Pessoas</a>
+                            </li>
+                            <li>
+                                <a href='/cliente/consulta/' class='botao_menu mb-1'>Clientes</a>
+                            </li>
+                            <li>
+                                <a href='/gerenciamento/agenda/' class='botao_menu mb-1 mt-1'>Assistência Técnica</a>
+                            </li>
+                            {{#if crm}}
+                            <li>
+                                <a href="/relatorios/consulta/" class="botao_menu mb-1">Relatório Comercial</a>
+                            </li>
+                            {{/if}}
+                            {{else}}
+                            {{#if orcamentista}}
+                            <li>
+                                <a href='/pessoa/consulta/' class='botao_menu mb-1 mt-1'>Pessoas</a>
+                            </li>
+                            <li>
+                                <a href='/cliente/consulta/' class='botao_menu mb-1'>Clientes</a>
+                            </li>
+                            <li>
+                                <a href='/gerenciamento/agenda/' class='botao_menu mb-1 mt-1'>Assistência Técnica</a>
+                            </li>
+                            {{else}}
+                            {{#if ehMaster}}
+                            <li>
+                                <a href='/pessoa/consulta/' class='botao_menu mb-1 mt-1'>Pessoas</a>
+                            </li>
+                            <li>
+                                <a href='/cliente/consulta/' class='botao_menu mb-1'>Clientes</a>
+                            </li>
+                            <li>
+                                <a href='/gerenciamento/agenda/' class='botao_menu mb-1 mt-1'>Assistência Técnica</a>
+                            </li>
+                            <li>
+                                <a {{#if empresa}}href='/configuracao/editempresa/{{empresa._id}}'
+                                    {{else}}href='/configuracao/addempresa' {{/if}} class='botao_menu mb-1'>Empresa</a>
+                            </li>
+                            <li>
+                                <a href='/gerenciamento/atividadesPadrao/' class='botao_menu'>Cadastro de Atividades
+                                    Padrão</a>
+                            </li>
+                            <li>
+                                <a href='/parametros/novo' class='botao_menu'>Cadastro de Parâmetros</a>
+                            </li>
+                            <li>
+                                <a href='/componente/novo' class='botao_menu'>Cadastro de Equipamentos</a>
+                            </li>
+                            <li>
+                                <a href='/gerenciamento/servicos/' class='botao_menu'>Cadastro de Serviços</a>
+                            </li>
+                            <li>
+                                <a href='/gerenciamento/mensagem/' class='botao_menu'>Cadastro de Mensagens</a>
+                            </li>
+                            <li>
+                                <a href='/administrador/acesso' class="botao_menu">Usuários</a>
+                            </li>
+                            {{/if}}
+                            {{#if owner}}
+                            <li>
+                                <a href='/administrador' class="botao_menu"> Novos</a>
+                            </li>
+                            {{/if}}
+                            {{/if}}
+                            {{/if}}
+                            {{/if}}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+
+    <div class="text-center">
+        <input type="hidden" name='pessoa' id='pessoa' value="{{pessoa}}">
+        {{#if crm}}
+        {{#if orcamentista}}
+        <input type="hidden" id="obra" value='false'>
+        <input type='hidden' id='nome' value="{{nome}}">
+        <div class="" style="text-align: left;">
+            <div class="row">
+                <div class="col-md-7">
+                    {{!-- href='/gerenciamento/orcamento/' --}}
+                    {{#if todos_cientes}}
+                    <a data-bs-toggle="modal" data-bs-target="#novoOrcamento" class='btn btn-sm btn-primary mb-1'>Novo
+                        Orçamento</a>
+                    {{else}}
+                    <a href="/gerenciamento/orcamento" class='btn btn-sm btn-primary mb-1'>Novo Orçamento</a>
+                    {{/if}}
+                    <a href='/gerenciamento/emandamento' class="btn btn-sm btn-primary mb-1">Planilha
+                        de Instalações</a>
+                    {{!-- <a class="btn btn-sm btn-primary mb-1" data-bs-toggle="modal"
+                        data-bs-target="#atrasados">Vencidos
+                        e
+                        a Vencer</a> --}}
+                    {{#if funass}}
+                    <a href='/gerenciamento/assistencia/' class='btn btn-sm btn-primary mb-1'>Assistência</a>
+                    {{/if}}
+                </div>
+                <div class="col">
+                    <form action="/gerenciamento/filtrodash" method="post">
+                        <div style="flex-direction: row;justify-content: right;display: flex;width: 100%;">
+                            <label class="col-form-label col-form-label-sm fw-bold">Filtrar:</label>
+                            <select name='mes' class='form-select form-select-sm' style="width: 140px;">
+                                {{#if mes}}
+                                <option>{{mes}}</option>
+                                {{/if}}
+                                <option>Todas</option>
+                                <option>Janeiro</option>
+                                <option>Fevereiro</option>
+                                <option>Março</option>
+                                <option>Abril</option>
+                                <option>Maio</option>
+                                <option>Junho</option>
+                                <option>Julho</option>
+                                <option>Agosto</option>
+                                <option>Setembro</option>
+                                <option>Outubro</option>
+                                <option>Novembro</option>
+                                <option>Dezembro</option>
+                            </select>
+                            <input type="number" name='ano' class='form-control form-control-sm' placeholder="ano"
+                                value='{{ano}}' style="width: 90px;">
+                            <button type="submit" class='btn btn-sm btn-primary' style="width: 50px;">Ir</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mt-2 mb-2">
+                    {{#if mes}}
+                    <label style="font-size: 16px;font-weight: 800;color: rgba(49,55,89)">Proposta do mês {{#if
+                        mes}}&nbspde&nbsp{{mes}}&nbspde&nbsp{{ano}}{{/if}}</label>
+                    {{else}}
+                    <label style="font-size: 16px;font-weight: 800;color: rgba(49,55,89)">Todas as propostas
+                    </label>
+                    {{/if}}
+                </div>
+                <input type='hidden' id='obra' value="false">
+                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                    <label class="titulo-inicio" style="color: white;width: 100%;">Propostas Abertas</label>
+                    <button class="btn" onclick="showIndex('venda')"><i class="bi bi-stoplights icone"
+                            title="Legendas de status"></i></button>
+                </div>
+                <div class="quadro-scroll" id="dim">
+                    <table>
+                        <tr>
+                            <th style="width: 5%;text-align: left">Código</th>
+                            <th style="width: 20%;text-align: center">Cliente</th>
+                            <th style="width: 10%;text-align: center">Data Cadastro</th>
+                        </tr>
+                        {{#each listaOrcado}}
+                        <tr>
+                            <td style="text-align: center"
+                                id='{{#if resp}}{{#if pedido}}execucao{{else}}{{#if pro}}homologado{{else}}aguardando{{/if}}{{/if}}{{else}}parado{{/if}}'
+                                class="d-flex align-items-center">
+                                <a onclick='entrarOrcamento("{{responsavel}}","{{id}}","{{id_responsavel}}")'
+                                    style="color: rgb(55,49,89);font-weight: 600;">&nbsp&nbsp&nbsp{{seq}}&nbsp&nbsp&nbsp&nbsp</a>
+                            </td>
+                            <td style="text-align: center">{{cliente}}</td>
+                            <td style="text-align: center">{{cadastro}}</td>
+                        </tr>
+                        {{else}}
+                        <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                        {{/each}}
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mt-2 mb-2">
+                    <label style="font-size: 16px;font-weight: 600;color: rgba(49,55,89)"></label>
+                </div>
+                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                    <label class="titulo-inicio" style="color: white;width: 100%;">Termos de Entrega</label>
+                    <button class="btn" onclick="showIndex('termos')"><i class="bi bi-stoplights icone"
+                            title="Legendas de Status"></i></button>
+                </div>
+                <div class="quadro-scroll" id="dim1">
+                    <table>
+                        <tr>
+                            <th style="width: 5%;text-align: left">Código</th>
+                            <th style="width: 20%;text-align: center">Cliente</th>
+                            <th style="width: 10%;text-align: center">Data Cadastro</th>
+                        </tr>
+
+                        {{#each listaExecucao}}
+                        {{#if mostrar}}
+                        <tr>
+                            <td style="text-align: center" id='realizado' class="d-flex align-items-center">
+                                <a href='/gerenciamento/mostrarBucket/{{desctermo}}'
+                                    style="color: rgb(55,49,89);font-weight: 600;">&nbsp&nbsp&nbsp&nbsp{{seq}}&nbsp&nbsp&nbsp&nbsp</a>
+                            </td>
+                            <td style="text-align: center">{{cliente}}</td>
+                            <td style="text-align: center">{{cadastro}}</td>
+                        </tr>
+                        {{/if}}
+                        {{else}}
+                        <label class='col-form-label col-form-label-sm'>Nenhum orçamento com termo de entrega
+                            adicionado.</label>
+                        {{/each}}
+                    </table>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        {{/if}}
+        {{/if}}
+
+        {{#if funpro}}
+        <div class="row">
+            <div class="col-md-2">
+                <a href='/gerenciamento/emandamento' class="btn btn-sm btn-primary mb-1">Planilha
+                    de Instalações</a>
+            </div>
+            <div class="col text-end">
+                <form action="/gerenciamento/filtrodash" method="post">
+                    <div style="flex-direction: row;justify-content: right;display: flex;width: 100%;">
+                        <label class="col-form-label col-form-label-sm fw-bold">Filtrar:</label>
+                        <select name='mes' class='form-select form-select-sm' style="width: 140px;">
+                            {{#if mes}}
+                            <option>{{mes}}</option>
+                            {{/if}}
+                            <option>Todas</option>
+                            <option>Janeiro</option>
+                            <option>Fevereiro</option>
+                            <option>Março</option>
+                            <option>Abril</option>
+                            <option>Maio</option>
+                            <option>Junho</option>
+                            <option>Julho</option>
+                            <option>Agosto</option>
+                            <option>Setembro</option>
+                            <option>Outubro</option>
+                            <option>Novembro</option>
+                            <option>Dezembro</option>
+                        </select>
+                        <input type="number" name='ano' class='form-control form-control-sm' placeholder="ano"
+                            value='{{ano}}' style="width: 90px;">
+                        <button type="submit" class='btn btn-sm btn-primary' style="width: 50px;">Ir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="mt-2 mb-2">
+            {{#if mes}}
+            <label style="font-size: 16px;font-weight: 800;color: rgba(49,55,89)">Projetos do mês de {{mes}}</label>
+            {{else}}
+            <label style="font-size: 16px;font-weight: 800;color: rgba(49,55,89)">Todos os Projetos</label>
+            {{/if}}
+            <div class="row mt-3">
+                <input type='hidden' id='obra' value="false">
+                <div class="col">
+                    <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                        <label class="titulo-inicio" style="color: white;width: 100%;">Aprovado</label>
+                        <button class="btn" onclick="showIndex('projeto')"><i class="bi bi-stoplights icone"
+                                title="Legendas de Status"></i></button>
+                    </div>
+                    <div class="quadro-scroll" id='dim'>
+                        <table>
+                            <tr>
+                                <th style="width: 10%;text-align: left">Código</th>
+                                <th style="width: 50%;text-align: center">Cliente</th>
+                                <th style="width: 20%;text-align: center">Data Cadastro</th>
+                            </tr>
+                            {{#each listaGanho}}
+                            <tr>
+                                <td style="text-align: center"
+                                    id='{{#if auth}}execucao{{else}}{{#if leva}}aguardando{{else}}levantamento{{/if}}{{/if}}'
+                                    class="d-flex align-items-center"><a href='/gerenciamento/projeto/{{id}}'
+                                        style="font-weight: 600;color: rgb(44,55,89);padding-left: 10px;">{{seq}}</a>
+                                </td>
+                                <td style="text-align: center">{{cliente}}</td>
+                                <td style="text-align: center">{{cadastro}}</td>
+                            </tr>
+                            {{else}}
+                            <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                            {{/each}}
+                        </table>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                        <label class="titulo-inicio" style="color: white;width: 100%;">Instalação</label>
+                        <button class="btn" onclick="showIndex('instalacao')"><i class="bi bi-stoplights icone"
+                                title="Legendas de Status"></i></button>
+                    </div>
+                    <div class="quadro-scroll" id="dim1">
+                        <table>
+                            <tr>
+                                <th style="width: 5%;text-align: left">Código</th>
+                                <th style="width: 60%;text-align: center">Cliente</th>
+                                {{!-- <th style="width: 20%;text-align: center">Data Cadastro</th> --}}
+                                <th style="width: 20%;text-align: center">Instalador</th>
+                            </tr>
+                            {{#each listaExecucao}}
+                            <tr>
+                                <td class="d-flex align-items-center" {{#if vistoria}} {{#if parado}} id="aguardando"
+                                    {{else}} id="execucao" {{/if}} {{else}} {{#if parado }} id='parado' {{else}}
+                                    id='homologado' {{/if}}{{/if}}>
+                                    <a href='/gerenciamento/instalacao/{{id}}' title="teste"
+                                        style="font-weight: 600;color: rgb(44,55,89)">{{#if vistoria}} {{#if
+                                        parado}} &nbsp&nbsp&nbspP&nbsp&nbsp&nbsp{{else}}
+                                        &nbsp&nbsp&nbspI&nbsp&nbsp&nbsp {{/if}} {{else}} {{#if parado }}
+                                        &nbsp&nbsp&nbspVP&nbsp&nbsp&nbsp {{else}} &nbsp&nbsp&nbspVI&nbsp&nbsp&nbsp
+                                        {{/if}}{{/if}}</a>
+                                </td>
+                                <td style="text-align: center">{{cliente}}</td>
+                                <td style="text-align: center">{{pes_ins_nome}}</td>
+                            </tr>
+                            {{else}}
+                            <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                            {{/each}}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        {{#if ehMaster}}
+        <input type="hidden" id="obra" value='false'>
+        <input type='hidden' id='nome' value="{{nome}}">
+        <div class="" style="text-align: left;">
+            <div class="row">
+                <div class="col-md-8">
+                    {{!-- href='/gerenciamento/orcamento/'' --}}
+                    {{#if crm}}
+                    {{#if todos_cientes}}
+                    <a data-bs-toggle="modal" data-bs-target="#novoOrcamento" class='btn btn-sm btn-primary mb-1'>Novo
+                        Orçamento</a>
+                    {{else}}
+                    <a href="/gerenciamento/orcamento" class='btn btn-sm btn-primary mb-1'>Novo Orçamento</a>
+                    {{/if}}
+                    <a href='/gerenciamento/selecao/' class='btn btn-sm btn-primary mb-1' id="ehmobile">Qualificação
+                        de
+                        Propostas</a>
+                    {{else}}
+                    <a href='/gerenciamento/orcamento' class='btn btn-sm btn-primary mb-1'>Novo Projeto</a>
+                    {{/if}}
+                    <a href='/gerenciamento/emandamento' class="btn btn-sm btn-primary mb-1">Planilha
+                        de Instalações</a>
+                    <a href="/gerenciamento/vermais" class="btn btn-sm btn-primary mb-1">Agenda Instaladores</i></a>
+                    {{#if crm}}
+                    {{!-- <a class="btn btn-sm btn-primary mb-1" data-bs-toggle="modal"
+                        data-bs-target="#atrasados">Vencidos
+                        e
+                        a Vencer</a> --}}
+                    <a href='/gerenciamento/leads/' class='btn btn-sm btn-primary mb-1'>Leads</a>
+                    {{/if}}
+                </div>
+                <div class="col">
+                    <form action="/gerenciamento/filtrodash" method="post">
+                        <div style="flex-direction: row;justify-content: right;display: flex;width: 100%;">
+                            <label class="col-form-label col-form-label-sm fw-bold">Filtrar:</label>
+                            <select name='mes' class='form-select form-select-sm' style="width: 140px;">
+                                {{#if mes}}
+                                <option>{{mes}}</option>
+                                {{/if}}
+                                <option>Todas</option>
+                                <option>Janeiro</option>
+                                <option>Fevereiro</option>
+                                <option>Março</option>
+                                <option>Abril</option>
+                                <option>Maio</option>
+                                <option>Junho</option>
+                                <option>Julho</option>
+                                <option>Agosto</option>
+                                <option>Setembro</option>
+                                <option>Outubro</option>
+                                <option>Novembro</option>
+                                <option>Dezembro</option>
+                            </select>
+                            <input type="number" name='ano' class='form-control form-control-sm' placeholder="ano"
+                                value='{{ano}}' style="width: 90px;">
+                            <button type="submit" class='btn btn-sm btn-primary' style="width: 50px;">Ir</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="mt-2 mb-2">
+            {{#if mes}}
+            <label style="font-size: 16px;font-weight: 800;color: rgba(49,55,89)">Proposta do mês {{#if
+                mes}}&nbspde&nbsp{{mes}}&nbspde&nbsp{{ano}}{{/if}}</label>
+            {{else}}
+            <label style="font-size: 16px;font-weight: 800;color: rgba(49,55,89)">Todas as propostas</label>
+            {{/if}}
+        </div>
+        <div class="row">
+            <input type='hidden' id='obra' value="false">
+            {{#if crm}}
+            <div class="col-md-4">
+                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                    <label class="titulo-inicio" style="color: white;width: 100%;">Propostas Abertas</label>
+                    <button class="btn" onclick="showIndex('venda')"><i class="bi bi-stoplights icone"
+                            title="Legendas de status"></i></button>
+                </div>
+                <div class="quadro-scroll" id="dim">
+                    <table>
+                        <tr>
+                            <th style="width: 5%;text-align: left">Código</th>
+                            <th style="width: 20%;text-align: center">Cliente</th>
+                            <th style="width: 10%;text-align: center">Data Cadastro</th>
+                        </tr>
+                        {{#each listaOrcado}}
+                        <tr>
+                            <td style="text-align: center"
+                                id='{{#if resp}}{{#if pedido}}execucao{{else}}{{#if pro}}homologado{{else}}aguardando{{/if}}{{/if}}{{else}}parado{{/if}}'
+                                class="d-flex align-items-center">
+                                <a onclick='entrarOrcamento("{{responsavel}}","{{id}}","{{id_responsavel}}")'
+                                    style="color: rgb(55,49,89);font-weight: 600;">&nbsp&nbsp&nbsp{{seq}}&nbsp&nbsp&nbsp&nbsp</a>
+                            </td>
+                            <td style="text-align: center">{{cliente}}</td>
+                            <td style="text-align: center">{{cadastro}}</td>
+                        </tr>
+                        {{else}}
+                        <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                        {{/each}}
+                    </table>
+                </div>
+            </div>
+            {{/if}}
+            <div class="col">
+                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                    <label class="titulo-inicio" style="color: white;width: 100%;">Aprovado</label>
+                    <button class="btn" onclick="showIndex('projeto')"><i class="bi bi-stoplights icone"
+                            title="Legendas de Status"></i></button>
+                </div>
+                <div class="quadro-scroll" id='dim1'>
+                    <table>
+                        <tr>
+                            <th style="width: 10%;text-align: left">Código</th>
+                            <th style="width: 50%;text-align: center">Cliente</th>
+                            <th style="width: 20%;text-align: center">Data Cadastro</th>
+                        </tr>
+                        {{#each listaGanho}}
+                        <tr>
+                            <td style="text-align: center" id='{{#if leva}}aguardando{{else}}levantamento{{/if}}'
+                                class="d-flex align-items-center"><a href='/gerenciamento/projeto/{{id}}'
+                                    style="font-weight: 600;color: rgb(44,55,89);padding-left: 10px;">{{seq}}</a>
+                            </td>
+                            <td style="text-align: center">{{cliente}}</td>
+                            <td style="text-align: center">{{cadastro}}</td>
+                        </tr>
+                        {{else}}
+                        <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                        {{/each}}
+                    </table>
+                </div>
+            </div>
+            <div class="col">
+                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                    <label class="titulo-inicio" style="color: white;width: 100%;">Instalação</label>
+                    <button class="btn" onclick="showIndex('instalacao')"><i class="bi bi-stoplights icone"
+                            title="Legendas de Status"></i></button>
+                </div>
+                <div class="quadro-scroll" id="dim2">
+                    <table>
+                        <tr>
+                            <th style="width: 5%;text-align: left">Código</th>
+                            <th style="width: 60%;text-align: center">Cliente</th>
+                            {{!-- <th style="width: 20%;text-align: center">Data Cadastro</th> --}}
+                            <th style="width: 20%;text-align: center">Instalador</th>
+                        </tr>
+                        {{#each listaExecucao}}
+                        <tr>
+                            <td class="d-flex align-items-center" {{#if encerrado}}id='execucao' title='em execução'
+                                {{else}} {{#if parado}} id='parado' {{else}}id="aguardando" title="aguardando"
+                                {{/if}}{{/if}}>
+                                <a href='/gerenciamento/instalacao/{{id}}'
+                                    style="font-weight: 600;color: rgb(44,55,89);padding-left: 10px;">{{seq}}</a>
+                            </td>
+                            <td style="text-align: center">{{cliente}}</td>
+                            <td style="text-align: center">{{pes_ins.nome}}</td>
+                        </tr>
+                        {{else}}
+                        <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                        {{/each}}
+                    </table>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+        {{/if}}
+    </div>
+</div>
+
+{{#if todos_clientes}}
+<div class='temcliente'></div>
+{{#each todos_clientes}}
+<input type="hidden" name="clinome[]" value="{{nome}}">
+<input type="hidden" name="cliid[]" value="{{_id}}">
+{{/each}}
+{{else}}
+<input type="hidden" name="clinome[]" value="">
+<input type="hidden" name="cliid[]" value="">
+{{/if}}
+
+<input type='hidden' id='qtdagua' value='{{qtdagua}}'>
+<input type='hidden' id='qtdexec' value='{{qtdexec}}'>
+<input type='hidden' id='qtdpara' value='{{qtdpara}}'>
+<input type='hidden' id='qtdreal' value='{{qtdreal}}'>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script type="text/javascript">
+    let nameList = []
+    fetch('https://www.vimmus.com.br/clients')
+        .then((resp) => resp.json())
+        .then((data) => {
+            data.map((client) => {
+                nameList.push(client.name)
+            });
+            $(".typeahead").autocomplete({
+                source: nameList
+            });
+        })
+        .catch((err) => {
+            alert('Não encontramos clientes cadastrados! ' + err)
+        })
+
+
+    $(function () {
+        var menu_width = "350";
+        var menu = $(".menu");
+        var menu_open = $(".menu-open");
+        var menu_close = $(".menu-close");
+        var overlay = $(".overlay");
+
+        menu_open.click((e) => {
+            e.preventDefault();
+            menu.css({ "right": "0px" });
+            overlay.css({ "opacity": "1", "width": "100%" })
+        });
+
+        menu_close.click((e) => {
+            e.preventDefault();
+            menu.css({ "right": "-" + menu_width + "px" });
+            overlay.css({ "opacity": "0", "width": "0" });
+        });
+
+        //REDIMENSIONAMETO PARA A TELA RESPONSIVA DO APLICATIVO
+        var nome = document.getElementById("nome")
+        if (screen.width < 640 || screen.height < 480) {
+            menu_open.css({ "padding-left": "40px" })
+            nome.style.width = "240px"
+        } else {
+            menu_open.css({ "padding-left": "300px" })
+            nome.style.width = "400px"
+        }
+    })
+
+    /*
+    var txt = ''
+    var txtins = ''
+    var cliav = document.getElementsByName('cliav[]')
+    var proav = document.getElementsByName('proav[]')
+    var statav = document.getElementsByName('statav[]')
+    var valav = document.getElementsByName('valav[]')
+    var idav = document.getElementsByName('idav[]')
+    var idins = document.getElementsByName('idins[]')
+    var proins = document.getElementsByName('proins[]')
+    var cliins = document.getElementsByName('cliins[]')
+    var cadins = document.getElementsByName('cadins[]')
+    var dtiass = document.getElementsByName('dtiass[]')
+    var dliins = document.getElementsByName('dliins[]')
+
+    /*
+    const wrapperini = document.createElement('div');
+    var htmlpro = ''
+    if (cliav.length > 0) {
+        htmlpro = '<div style="font-size: 16px">Propostas a menos de 1 (um) dia de vencer </div><br><table style="font-size:15px"><tr><th style="width: 10%;text-align:center">Proposta</th><th style="width: 10%;text-align:center">Cliente</th><th style="width: 10%;text-align:center">Status</th><th style="width: 10%;text-align:center">Data Validade</th><th style="width: 1%;text-align:center">Ações</th></tr><tr>'
+    }
+    var htmlfim = '</table>'
+    for (var i = 0; i < cliav.length; i++) {
+        txt = txt + '<tr><td>' + proav[i].value + '</td><td>' + cliav[i].value + '</td><td>' + statav[i].value + '</td><td>' + valav[i].value + '</td><td style="width: 10%"><div class="btn-group gap-2 col-12"><a href="/gerenciamento/orcamento/' + idav[i].value + '"><i style="color: rgb(44,55,89)" class="bi bi-pen icone-tabela"></i></a><a href="/gerenciamento/confirmastatus/' + idav[i].value + '"><i style="color:rgba(44,55,89)" class="bi bi-front icone-tabela"></i></a><a href="/gerenciamento/ganho/' + idav[i].value + '"><i style="color:rgba(44,55,89);title:"Ganho"" class="bi bi-file-earmark-check icone-tabela"></i></a></div></td></tr>'
+    }
+    var htmlins = '<div style="font-size: 16px">Instalação Agendada</div><br><table style="font-size:15px"><tr><th style="width: 5%;text-align:center">Proposta</th><th style="width: 20%;text-align:center">Cliente</th><th style="width: 10%;text-align:center">Início</th><th style="width: 10%;text-align:center">Deadline</th><th style="width: 10%;text-align:center">Ações</th></tr><tr>'
+    for (var x = 0; x < cliins.length; x++) {
+        txtins = txtins + '<tr><td>' + proins[x].value + '</td><td>' + cliins[x].value + '</td><td>' + dtiass[x].value + '</td><td>' + dliins[x].value + '</td><td><a href="/gerenciamento/proposta/' + idins[x].value + '"><i style="color: rgb(44,55,89)" class="bi bi-pen icone-tabela"></i></a></td></tr>'
+    }
+ 
+    if (cliav.length > 0) {
+        wrapperini.innerHTML = htmlpro + txt + htmlfim + '<hr>' + htmlins + txtins + htmlfim
+    } else {
+        wrapperini.innerHTML = htmlins + txtins + htmlfim
+    }
+ 
+    if (cliav.length > 0 || cliins.length > 0) {
+        Swal.fire({
+            title: '<strong style="font-size: 25px">Controle de Projetos e Propostas</strong>',
+            width: 800,
+            html: wrapperini,
+            showCloseButton: true,
+            showConfirmButton: false
+        })
+    }
+    */
+    /*
+    //grafico tarefas
+    var qtdagua = document.getElementById('qtdagua')
+    var qtdexec = document.getElementById('qtdexec')
+    var qtdpara = document.getElementById('qtdpara')
+    var qtdreal = document.getElementById('qtdreal')
+
+    var ctxGeral = document.getElementById('chartGeral').getContext('2d')
+    var chartGeral = new Chart(ctxGeral, {
+        type: 'bar',
+        data: {
+            labels: ['Aguardando', 'Em execução', 'Parado', 'Realizado'],
+            datasets: [{
+                data: [qtdagua.value, qtdexec.value, qtdpara.value, qtdreal.value],
+                backgroundColor: [
+                    'rgba(37, 139, 33, 0.2)',
+                    'rgba(50, 140, 230, 0.2)',
+                    'rgba(140, 50, 230, 0.2)',
+                    'rgba(240, 37, 33, 0.2)',
+                ],
+                borderColor: [
+                    'rgba(37, 139, 33, 1)',
+                    'rgba(50, 140, 230, 1)',
+                    'rgba(140, 50, 230, 1)',
+                    'rgba(240, 37, 33, 1)',
+                ],
+                borderWidth: 1,
+            }],
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            legend: {
+                display: false,
+                position: 'top',
+                reverse: true,
+                align: 'center',
+                labels: {
+                    usePointStyle: true,
+                }
+            }
+        }
+    })    
+    */
+</script>

@@ -1,0 +1,539 @@
+<style type="text/css">
+    i {
+        font-size: 16px;
+        vertical-align: text-top;
+    }
+
+    th {
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    td {
+        text-align: center;
+        line-height: 30px;
+    }
+
+    table {
+        font-size: 15px;
+
+    }
+
+    a {
+        cursor: pointer;
+    }
+
+    .swal-wide {
+        width: 850px !important;
+    }
+</style>
+
+<script src="/js/uteis.js"></script>
+<script>
+    setTimeout(function () {
+        window.location.reload(1);
+    }, 180000); // 3 minutos
+</script>
+
+<div style="width: 99%;padding-left: 15px;">
+    <div class="row">
+        <div class="col-md-5">
+            <label class='col-form-label mt-2' id='saudacao'></label>
+        </div>
+        <div class="col">
+            <div style="display: flex">
+                {{!-- BUSCA DE CLIENTES --}}
+                <form method="POST" action="/cliente/buscaNomeCliente">
+                    <div style='display: block;flex-direction: row;justify-content: center;margin-top: 15px;'>
+                        <input type="text" class="typeahead mb-4" id="nome" name="nome" placeholder="Nome do Cliente">
+                        <button type="submit" style="height: 30px;position: absolute;"
+                            class="btn bnt-sm btn-primary">Ir</button>
+                    </div>
+                </form>
+
+                <div style="margin-top: 10px;">
+                    <a href="#" class="menu-open">
+                        <i style="font-size: 30px;" class="bi bi-arrow-bar-left"></i>
+                    </a>
+                    <div class="overlay"></div>
+                    <div class="menu">
+                        <a href="#" class="menu-close"
+                            style="margin-top: 30px;display: flex;flex-direction: row;justify-content: left;"><i
+                                class="bi bi-arrow-bar-right"></i></a>
+                        <ul>
+                            <li>
+                                <a href='/usuario/editar/{{id}}' class="botao_minhaconta mb-1"
+                                    style="color: #9b9b9b;">Minha
+                                    Conta</a><br>
+                            </li>
+                            {{#if vendedor}}
+                            <li>
+                                <a href='/cliente/consulta/' class='botao_menu mb-1'>Clientes</a><br>
+                            </li>
+                            {{/if}}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section name="menu">
+        <div class="caixa-menu text-center">
+            <input type='hidden' id='nome' value="{{nome}}">
+            <a href='/cliente/novo/' class='btn btn-sm btn-primary mb-1'>Cliente</a>
+            <a href='/gerenciamento/leads/' class='btn btn-sm btn-primary mb-1'>Leads</a>
+            <a data-bs-toggle="modal" data-bs-target="#novoOrcamento" class='btn btn-sm btn-primary mb-1'>Novo
+                Orçamento</a>
+            <a href='/gerenciamento/selecao/' class='btn btn-sm btn-primary mb-1' id="ehmobile">Qualificação de
+                Propostas</a>
+        </div>
+        <div class="caixa-menu">
+            <form action="/gerenciamento/filtrodash" method="post">
+                <div style="flex-direction: row;justify-content: center;display: flex;width: 100%;">
+                    <label class="col-form-label col-form-label-sm fw-bold">Filtrar:</label>
+                    <select name='mes' class='form-select form-select-sm' style="width: 140px;">
+                        {{#if mes}}
+                        <option>{{mes}}</option>
+                        {{/if}}
+                        <option>Todas</option>
+                        <option>Janeiro</option>
+                        <option>Fevereiro</option>
+                        <option>Março</option>
+                        <option>Abril</option>
+                        <option>Maio</option>
+                        <option>Junho</option>
+                        <option>Julho</option>
+                        <option>Agosto</option>
+                        <option>Setembro</option>
+                        <option>Outubro</option>
+                        <option>Novembro</option>
+                        <option>Dezembro</option>
+                    </select>
+                    <input type="number" name='ano' class='form-control form-control-sm' placeholder="ano"
+                        value='{{ano}}' style="width: 90px;">
+                    <button type="submit" class='btn btn-sm btn-primary' style="width: 50px;">Ir</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="caixa-menu text-center">
+            <section id="topo">
+                <div class="">
+                    <a href="#enviados" class='btn btn-primary mb-1'>Enviados</a>
+                    <a href="#entregues" class='btn btn-primary mb-1'>Entregues</a>
+                    <a href="#negociando" class='btn btn-primary mb-1'>Negociando</a>
+                    <a href="#futuro" class='btn btn-primary mb-1'>Futuros</a>
+                    <a href="#ganho" class='btn btn-primary mb-1'>Ganho</a>
+                    <a href="#perdido" class='btn btn-primary mb-1'>Perdido</a>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <div class="row mb-4">
+        <div class="row">
+            <div class="col">
+                <section id='enviados'>
+                    <div style="margin-bottom: 10px;">
+                        <div class='quadro-scroll' style="padding-left: 5px;">
+                            <div class="mt-1 mb-3">
+                                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                                    <label class="titulo-inicio" style="color: white;width: 100%;">Orçamentos
+                                        Enviados</label>
+                                    <button class="btn" onclick="showIndex('enviados')"><i
+                                            class="bi bi-stoplights icone" title="Legendas de Status"></i></button>
+                                </div>
+                            </div>
+                            <table>
+                                <tr>
+                                    <th style="width: 20%;text-align: left">Código</th>
+                                    <th style="width: 50%;text-align: center">Cliente</th>
+                                    <th style="width: 30%;text-align: center">Data Cadastro</th>
+                                    <th style="width: 10%;text-align: center"></th>
+                                </tr>
+                                {{#each listaEnviado}}
+                                <tr>
+                                    <td id='{{#if resp}}{{#if pedido}}execucao{{else}}{{#if pro}}homologado{{else}}aguardando{{/if}}{{/if}}{{else}}parado{{/if}}'
+                                        style="text-align: center;" class='d-flex align-items-center'>
+                                        <a href='/gerenciamento/orcamento/{{id}}'
+                                            style="width: 70px;font-weight: 600;font-size: 15px;color: rgb(44,55,89);">{{seq}}</a>
+                                    </td>
+                                    <td style="text-align: center">{{cliente}}</td>
+                                    <td style="text-align: center">{{cadastro}}</td>
+                                    <td>
+                                        <a class="" style="cursor: pointer;" data-bs-toggle="dropdown"><i
+                                                style="font-size: 20px;"
+                                                class='bi bi-list d-flex align-items-center'></i></a>
+                                        <ul class="dropdown-menu text-center">
+                                            <div class="btn-group gap-2">
+                                                <li><a href="/gerenciamento/propostaEntregue/{{id}}" title='Entrega'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-check d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a href="/gerenciamento/confirmastatus/{{id}}" title='Negociando'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-briefcase d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a onclick='agendarDash("{{id}}","{{idcliente}}","{{idvendedor}}")'
+                                                        title='Futuro' class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-binoculars d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a href="/gerenciamento/confirmabaixa/{{id}}" title='Perdido'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-x-circle d-flex align-items-center'></i></a>
+                                                </li>
+                                            </div>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                                {{/each}}
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col">
+                <section id='entregues'>
+                    <div style="margin-bottom: 10px;">
+                        <div class='quadro-scroll' style="padding-left: 5px;">
+                            <div class="text-center mt-1 mb-3">
+                                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                                    <label class="titulo-inicio" style="color: white;width: 100%;">Orçamentos
+                                        Entregues</label>
+                                    <button class="btn" onclick="showIndex('entregue')"><i
+                                            class="bi bi-stoplights icone" title="Legendas de Status"></i></button>
+                                </div>
+                            </div>
+                            <table>
+                                <tr>
+                                    <th style="width: 20%;text-align: left">Código</th>
+                                    <th style="width: 50%;text-align: center">Cliente</th>
+                                    <th style="width: 30%;text-align: center">Data Cadastro</th>
+                                    <th style="width: 10%;text-align: center"></th>
+                                </tr>
+                                {{#each listaEntregue}}
+                                <tr>
+                                    <td style="text-align: center" id={{#if alerta}}'parado'{{else}}'realizado'{{/if}}
+                                        class="d-flex align-items-center">
+                                        <a href='/gerenciamento/orcamento/{{id}}'
+                                            style="width: 70px;font-weight: 600;color: rgb(44,55,89);">{{seq}}</a>
+                                    </td>
+                                    <td style="text-align: center">{{cliente}}</td>
+                                    <td style="text-align: center">{{cadastro}}</td>
+                                    <td>
+                                        <a class="" style="cursor: pointer;" data-bs-toggle="dropdown"><i
+                                                style="font-size: 20px;"
+                                                class='bi bi-list d-flex align-items-center'></i></a>
+                                        <ul class="dropdown-menu text-center">
+                                            <div class="btn-group gap-2">
+                                                <li><a href="/gerenciamento/desfazerEntregue/{{id}}" title='desfazer'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-reply d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a href="/gerenciamento/confirmastatus/{{id}}" title='Negociando'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-briefcase d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a onclick='agendarDash("{{id}}","{{idcliente}}","{{idvendedor}}")'
+                                                        title='Futuro' class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-binoculars d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a href="/gerenciamento/confirmabaixa/{{id}}" title='Perdido'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-x-circle d-flex align-items-center'></i></a>
+                                                </li>
+                                            </div>
+
+                                        </ul>
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                                {{/each}}
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <section id='negociando'>
+                    <div style="margin-bottom: 10px;">
+                        <div class='quadro-scroll' style="padding-left: 5px;">
+                            <div class="text-center mt-1 mb-3">
+                                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                                    <label class="titulo-inicio" style="color: white;width: 100%;">Orçamentos
+                                        Negociando</label>
+                                    <button class="btn" onclick="showIndex('negociando')"><i
+                                            class="bi bi-stoplights icone" title="Legendas de Status"></i></button>
+                                </div>
+                            </div>
+                            <table>
+                                <tr>
+                                    <th style="width: 20%;text-align: left">Código</th>
+                                    <th style="width: 50%;text-align: center">Cliente</th>
+                                    <th style="width: 30%;text-align: center">Data Cadastro</th>
+                                    <th style="width: 10%;text-align: center"></th>
+                                </tr>
+                                {{#each listaNegociando}}
+                                <tr>
+                                    <td style="text-align: center" id={{#if alerta}}'parado'{{else}}'homologado'{{/if}}
+                                        class="d-flex align-items-center">
+                                        <a href='/gerenciamento/orcamento/{{id}}'
+                                            style="width: 70px;color: rgb(44,55,89);font-weight: 600;">{{seq}}</a>
+                                    </td>
+                                    <td style="text-align: center">{{cliente}}</td>
+                                    <td style="text-align: center">{{cadastro}}</td>
+                                    <td>
+                                        <a class="" style="cursor: pointer;" data-bs-toggle="dropdown"><i
+                                                style="font-size: 20px;"
+                                                class='bi bi-list d-flex align-items-center'></i></a>
+                                        <ul class="dropdown-menu text-center">
+                                            <div class="btn-group gap-2">
+                                                <li><a href="/gerenciamento/desfazerGanho/{{id}}" title='desfazer'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-reply d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a href="/gerenciamento/confirmastatus/{{id}}" title='Negociando'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-briefcase d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a onclick='agendarDash("{{id}}","{{idcliente}}","{{idvendedor}}")'
+                                                        title='Futuro' class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-binoculars d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a href="/gerenciamento/confirmabaixa/{{id}}" title='Perdido'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-x-circle d-flex align-items-center'></i></a>
+                                                </li>
+                                            </div>
+
+                                        </ul>
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                                {{/each}}
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col">
+                <section id='futuro'>
+                    <div style="margin-bottom: 10px;">
+                        <div class='quadro-scroll' style="padding-left: 5px;">
+                            <div class="text-center mt-1 mb-3">
+                                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                                    <label class="titulo-inicio" style="color: white;width: 100%;">Orçamentos
+                                        Futuros</label>
+                                </div>
+                            </div>
+                            <table>
+                                <tr>
+                                    <th style="width: 20%;text-align: left">Código</th>
+                                    <th style="width: 50%;text-align: center">Cliente</th>
+                                    <th style="width: 30%;text-align: center">Data Cadastro</th>
+                                    <th style="width: 10%;text-align: center"></th>
+                                </tr>
+                                {{#each listaFuturos}}
+                                <tr>
+                                    <td style="text-align: center" id='homologado' class="d-flex align-items-center">
+                                        <a href='/gerenciamento/orcamento/{{id}}'
+                                            style="width: 70px;color: rgb(44,55,89);font-weight: 600;">{{seq}}</a>
+                                    </td>
+                                    <td style="text-align: center">{{cliente}}</td>
+                                    <td style="text-align: center">{{cadastro}}</td>
+                                    <td>
+                                        <a class="" style="cursor: pointer;" data-bs-toggle="dropdown"><i
+                                                style="font-size: 20px;"
+                                                class='bi bi-list d-flex align-items-center'></i></a>
+                                        <ul class="dropdown-menu text-center">
+                                            <div class="btn-group gap-2">
+                                                <li><a href="/gerenciamento/desfazerGanho/{{id}}" title='desfazer'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-reply d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a href="/gerenciamento/confirmastatus/{{id}}" title='Negociando'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-briefcase d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a onclick='agendarDash("{{id}}","{{idcliente}}","{{idvendedor}}")'
+                                                        title='Futuro' class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-binoculars d-flex align-items-center'></i></a>
+                                                </li>
+                                                <li><a href="/gerenciamento/confirmabaixa/{{id}}" title='Perdido'
+                                                        class='btn btn-sm btn-primary'><i
+                                                            class='bi bi-x-circle d-flex align-items-center'></i></a>
+                                                </li>
+                                            </div>
+
+                                        </ul>
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                                {{/each}}
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <section id='ganho'>
+                    <div style="margin-bottom: 10px;">
+                        <div class='quadro-scroll' style="padding-left: 5px;">
+                            <div class="text-center mt-1 mb-3">
+                                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                                    <label class="titulo-inicio" style="color: white;width: 100%;">Orçamentos
+                                        Ganhos</label>
+                                    <button class="btn" onclick="showIndex('ganho')"><i class="bi bi-stoplights icone"
+                                            title="Legendas de Status"></i></button>
+                                </div>
+                            </div>
+                            <table>
+                                <tr>
+                                    <th style="width: 20%;text-align: left">Código</th>
+                                    <th style="width: 50%;text-align: center">Cliente</th>
+                                    <th style="width: 30%;text-align: center">Data Cadastro</th>
+                                    <th></th>
+                                </tr>
+                                {{#each listaGanho}}
+                                <tr>
+                                    <td id='{{#if auth}}execucao{{else}}{{#if leva}}aguardando{{else}}levantamento{{/if}}{{/if}}'
+                                        style="text-align: center" class='d-flex align-items-center'>
+                                        <a href='/gerenciamento/orcamento/{{id}}'
+                                            style="width: 70px;color: rgb(44,55,89);font-weight: 600;">{{seq}}</a>
+                                    </td>
+                                    <td style="text-align: center">{{cliente}}</td>
+                                    <td style="text-align: center">{{cadastro}}</td>
+                                    <td>
+                                        <a href="/gerenciamento/desfazerGanho/{{id}}" title='desfazer'
+                                            class='btn btn-sm btn-primary'>
+                                            <i class='bi bi-reply d-flex align-items-center'></i></a>
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                                {{/each}}
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col">
+                <section id='perdido'>
+                    <div style="margin-bottom: 10px;">
+                        <div class='quadro-scroll' style="padding-left: 5px;">
+                            <div class="text-center mt-1 mb-3">
+                                <div class="contorno-titulo-dem" style="display: flex;justify-content: flex-end;">
+                                    <label class="titulo-inicio" style="color: white;width: 100%;">Orçamentos
+                                        Perdidos</label>
+                                </div>
+                            </div>
+                            <table>
+                                <tr>
+                                    <th style="width: 20%;text-align: left">Código</th>
+                                    <th style="width: 50%;text-align: center">Cliente</th>
+                                    <th style="width: 30%;text-align: center">Data Cadastro</th>
+                                    <th></th>
+                                </tr>
+                                {{#each listaBaixado}}
+                                <tr>
+                                    <td id='realizado' style="text-align: center" class='d-flex align-items-center'>
+                                        <a href='/gerenciamento/orcamento/{{id}}'
+                                            style="width: 70px;color: rgb(44,55,89);font-weight: 600;">{{seq}}</a>
+                                    </td>
+                                    <td style="text-align: center">{{cliente}}</td>
+                                    <td style="text-align: center">{{cadastro}}</td>
+                                    <td>
+                                        <a href="/gerenciamento/recuperar/{{id}}" title='recuperar'
+                                            class='btn btn-sm btn-primary'>
+                                            <i class='bi bi-reply d-flex align-items-center'></i></a>
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <label class='col-form-label col-form-label-sm'>Nenhum orçamento lançado.</label>
+                                {{/each}}
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#if todos_clientes}}
+<div class='temcliente'></div>
+{{#each todos_clientes}}
+<input type="hidden" name="clinome[]" value="{{nome}}">
+<input type="hidden" name="cliid[]" value="{{_id}}">
+{{/each}}
+{{else}}
+<input type="hidden" name="clinome[]" value="">
+<input type="hidden" name="cliid[]" value="">
+{{/if}}
+
+<input type='hidden' id='qtdagua' value='{{qtdagua}}'>
+<input type='hidden' id='qtdexec' value='{{qtdexec}}'>
+<input type='hidden' id='qtdpara' value='{{qtdpara}}'>
+<input type='hidden' id='qtdreal' value='{{qtdreal}}'>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script type="text/javascript">
+    let nameList = []
+    fetch('https://www.vimmus.com.br/clients')
+        .then((resp) => resp.json())
+        .then((data) => {
+            data.map((client) => {
+                nameList.push(client.name)
+            });
+            $(".typeahead").autocomplete({
+                source: nameList
+            });
+        })
+        .catch((err) => {
+            alert('Não encontramos clientes cadastrados! ' + err)
+        })
+
+
+    $(function () {
+        var menu_width = "350";
+        var menu = $(".menu");
+        var menu_open = $(".menu-open");
+        var menu_close = $(".menu-close");
+        var overlay = $(".overlay");
+
+        menu_open.click((e) => {
+            e.preventDefault();
+            menu.css({ "right": "0px" });
+            overlay.css({ "opacity": "1", "width": "100%" })
+        });
+
+        menu_close.click((e) => {
+            e.preventDefault();
+            menu.css({ "right": "-" + menu_width + "px" });
+            overlay.css({ "opacity": "0", "width": "0" });
+        });
+
+        //REDIMENSIONAMETO PARA A TELA RESPONSIVA DO APLICATIVO
+        var nome = document.getElementById("nome")
+        if (screen.width < 640 || screen.height < 480) {
+            menu_open.css({ "padding-left": "40px" })
+            nome.style.width = "240px"
+        } else {
+            menu_open.css({ "padding-left": "300px" })
+            nome.style.width = "400px"
+        }
+    })
+</script>

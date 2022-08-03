@@ -1,0 +1,237 @@
+<style>
+    td {
+        line-height: 30px;
+        font-size: 14px;
+    }
+
+    th {
+        font-size: 16px;
+    }
+</style>
+<script src="/js/uteis.js/"></script>
+<script>
+    window.onload = function () {
+        var d = document.getElementById('data')
+        var ano = 0
+        var mes = 0
+        var dia = 0
+        var date = new Date()
+
+        ano = date.getFullYear()
+        mes = date.getMonth() + 1
+        if (mes < 10) {
+            mes = '0' + mes
+        }
+        dia = date.getDate()
+        if (dia < 10) {
+            dia = '0' + dia
+        }
+        var dataFinal = ano + '-' + mes + '-' + dia
+        d.value = dataFinal
+    }
+</script>
+<div style="margin: 50px">
+    <div class="card mt-4">
+        <div class="card-body">
+            <section id="cabecalho">
+                <div>
+                    <label style="font-size: 20px;font-weight: 600;">Ordem de Instalação</label>
+                </div>
+                <div class="btn-group">
+                    <div style="width: 300px;">
+                        <img src='/gerenciamento/mostrarBucket/{{logo}}' style="width: 300px; height: 160px;"
+                            alt='Minha Figura' />
+                    </div>
+                    <div style="width: 400px;">
+                        <label style="font-size: 17px;line-height: 25px;">{{nome}}</label><br />
+                        <label style="font-size: 17px;line-height: 25px;">{{endereco}}</label><br>
+                        <label style="font-size: 17px;line-height: 25px;">Fone: {{telefone}}</label><br>
+                        <label style="font-size: 17px;line-height: 25px;">{{cidade}}</label>
+                        <label style="font-size: 17px;line-height: 25px;">{{uf}}</label><br>
+                        <label style="font-size: 17px;line-height: 25px;">{{website}}</label>
+                    </div>
+                    <div style="width: 200px;">
+                        <div class="text-center">
+                            <div class="col-form-label fw-bold">PEDIDO</div><br>
+                            <div>DATA</div><br>
+                            <input class='form-control' type="date" id='data'>
+                            <label class='col-form-label' id='descdata' style="width: 200px;margin-left: 70px;"></label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <hr>
+            <section id="cliente">
+                <div class="mt-2">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="col-form-label col-form-label-sm">Nome do Cliente:
+                                {{cliente.nome}}</label>
+                        </div>
+                        <div class="col text-end">
+                            <label class="col-form-label col-form-label-sm">Concessionária:</label><br>
+                            <label class="col-form-label col-form-label-sm">U.C.(s):</label>
+                        </div>
+                        <div class="col text-start">
+                            <label class="col-form-label col-form-label-sm">{{projeto.concessionaria}}:</label>
+                            <input type="text" id="uc" name='uc' class='form-control form-control-sm'
+                                style="display: '';" value="{{projeto.descuc}}">
+                            <label class='col-form-label col-form-label-sm' id="descuc" style="display: none;"></label>
+                        </div>
+                    </div>
+
+                    <label class="col-form-label col-form-label-sm" style="margin-right: 100px;">Endereço:
+                        {{projeto.endereco}}</label>
+                    <label class="col-form-label col-form-label-sm" style="margin-right: 100px;">Nº:
+                        {{projeto.numero}}</label>
+                    <label class="col-form-label col-form-label-sm" style="margin-right: 100px;">Bairro:
+                        {{projeto.bairro}}</label><br>
+                    <label class="col-form-label col-form-label-sm" style="margin-right: 100px;">Município:
+                        {{projeto.cidade}}</label>
+                    <label class="col-form-label col-form-label-sm" style="margin-right: 100px;">CEP:
+                        {{projeto.cep}}</label>
+                    <label class="col-form-label col-form-label-sm" style="margin-right: 100px;">Estado:
+                        {{projeto.uf}}</label>
+                    <label class="col-form-label col-form-label-sm" style="margin-right: 100px;">Fone:
+                        {{cliente.celular}}</label><br>
+                    <div class="btn-group">
+                        <div class="col-md-8">
+                            <label class="col-form-label col-form-label-sm" style="margin-right: 200px;">{{#if
+                                ehCPF}}CPF:
+                                {{cliente.cpf}}{{else}}CNPJ: {{cliente.cnpj}}{{/if}}</label>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <label class="col-form-label col-form-label-sm">Incrição
+                                Estadual:</label><br>
+                        </div>
+                        <div class="col-md-4 text-start">
+                            <input type="text" class='form-control form-control-sm'>
+                        </div>
+
+                    </div>
+                    <br>
+                    <div class="btn-group">
+                        <div style="margin-right: 90px;">
+                            <label class="col-form-label col-form-label-sm">E-mail:
+                                {{cliente.email}}</label>
+                        </div>
+                        <div class="text-end">
+                            <label class="col-form-label col-form-label-sm">Rede Wi-fi:
+                            </label>
+                        </div>
+                        <div class="col-md-2 text-end" style="margin-right: 60px;">
+                            <input type="text" class='form-control form-control-sm'>
+                        </div>
+                        <div class="col text-end">
+                            <label class="col-form-label col-form-label-sm" style="margin-right: 100px;">Potência:
+                                {{projeto.potencia}} kWp</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="incluso">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card" style="padding: 10px;">
+                            <label style="font-size: 20px;" class='fw-bold'>ESTÃO INCLUSOS NESTA
+                                INSTALAÇÃO</label><br>
+                            <div class="text-start"></div>
+                            {{#each mensagem}}
+                            <label style="font-size: 12px;">{{descricao}}</label><br>
+                            {{/each}}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div style="padding: 10px;">
+                            <label style="font-size: 20px;" class='text-center fw-bold'>MATERIAL</label><br>
+                            <table>
+                                <tr>
+                                    <td style="width: 400px;" class="fw-bold">Items</td>
+                                    <td style="width: 40px;"class="fw-bold">Quantidade</td>
+                                </tr>
+                                {{#each projeto.material}}
+                                <tr>
+                                    <td>{{desc}}</td>
+                                    <td>{{qtd}}</td>
+                                </tr>
+                                {{/each}}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="condicoes">
+                <div style="padding: 15px">
+                    <div style="border: 1px solid rgba(140,140,140,0.3);border-radius: 5px;padding: 10px;">
+                        <label style="font-size: 20px;" class='text-center fw-bold'>INFORMAÇÕES
+                            COMPLEMENTARES</label><br>
+                        <div style="padding: 15px">
+                            {{#each projeto.params}}
+                            <label style='font-size: 12px; class="fw-bold"'>{{descricao}}:</label>
+                            <label style='font-size: 12px;'>&nbsp{{valor}}</label><br>
+                            {{/each}}
+                            {{#if projeto.solar}}
+                            <label style='font-size: 12px; class="fw-bold"'>Orientação:</label>
+                            <label style='font-size: 12px;'>&nbsp{{projeto.orientacao}}</label><br>
+                            <label style='font-size: 12px; class="fw-bold"'>Telhado:</label>
+                            <label style='font-size: 12px;'>&nbsp{{projeto.telhado}}</label><br>
+                            <label style='font-size: 12px; class="fw-bold"'>Estrutura:</label>
+                            <label style='font-size: 12px;'>&nbsp{{projeto.estrutura}}</label><br>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div
+                        style="border: 1px solid rgba(140,140,140,0.3);border-radius: 5px;padding: 10px;margin-top: 10px;">
+                        <label style="font-size: 20px;" class='text-center fw-bold'>CONDIÇÕES DE
+                            PAGAMENTO</label><br>
+                        <label class="col-form-label col-form-label-sm">Prazo de Entrega:
+                            {{projeto.prazo}} dias</label><br>
+                        <label class="col-form-label col-form-label-sm">Condição:
+                            {{projeto.pagamento}}</label><br>
+                    </div>
+                </div>
+                <div style="padding: 15px">
+                    <div style="border: 1px solid rgba(140,140,140,0.3);border-radius: 5px;padding: 10px;display:flex">
+                        <label style="font-size: 20px;" class='text-center fw-bold'>VALOR:</label>
+                        <div class="justify-align-end">
+                            <label style="font-size: 20px;"
+                                class='text-end fw-bold'>&nbsp&nbsp&nbsp&nbspR$&nbsp&nbsp{{valor}}</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id='assinatura'>
+                <div class="card-body">
+                    <div class='text-center' style="margin-bottom: 50px;">
+                        <label class="col-form-label fw-bold">Assinaturas</label>
+                    </div>
+                    <div class="row">
+                        <div class="col text-center">
+                            <label class="col-form-label">________________________________</label><br>
+                            <label class="col-form-label">{{nome}}</label><br>
+                            <label class="col-form-label">{{cnpj}}</label><br>
+                            <label class="col-form-label">Vendedor: {{vendedor}}</label><br>
+                        </div>
+                        <div class="col text-center">
+                            <label class="col-form-label">________________________________</label><br>
+                            <label class="col-form-label">{{cliente.nome}}</label><br>
+                            <label class="col-form-label">{{#if
+                                ehCPF}}{{cliente.cpf}}{{else}}{{cliente.cnpj}}{{/if}}</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div style="margin-bottom: 90px;" class='no-print'>
+        <div class="btn-group gap-2 col-6">
+            <a href="/gerenciamento/orcamento/{{projeto._id}}" style="color: rgb(40, 55, 86);font-size: 30px;">
+                <i class="bi bi-arrow-left-circle"></i></a>
+            {{!-- <a href="/gerenciamento/imprimePedido/{{projeto._id}}"
+                style="color: rgb(40, 55, 86);font-size: 30px;">
+                <i class="bi bi-save"></i></a> --}}
+            <a href='/' style="color: rgb(40, 55, 86);font-size: 30px;" value="Imprimir"
+                onclick=";window.print();return false"><i class="bi bi-printer d-flex align-items-right mt-2"></i></a>
+        </div>
+    </div>
+</div>
