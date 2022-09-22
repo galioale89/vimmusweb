@@ -85,7 +85,7 @@ app.set('view engine', 'handlebars')
 
 //Mongoose DB
 mongoose.Promise = global.Promise
-mongoose.connect('mongodb://vimmus01:64l10770@mongo71-farm10.kinghost.net/vimmus01', {
+mongoose.connect('mongodb://vimmus:3rdn4x3L@@@18.229.182.115/27017/vimmus', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
