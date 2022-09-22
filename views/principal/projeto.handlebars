@@ -17,13 +17,9 @@
         if (bloquear.className == 'true') {
             bloquear.className = 'disabledbutton'
         }
-    }; 
-</script>
-<style>
-    #btnovo:hover {
-        font-weight: bold;
     }
-</style>
+</script>
+
 <!-- Modal Plantas -->
 <div class='modal fade' id='anexos' tabindex="-1" aria-hidden="true">
     <div class='modal-dialog modal-fullscreen'>
@@ -106,60 +102,32 @@
     {{/if}}
 
     <div id='bloquear' class='{{projeto.encerrado}}'>
-        <div class='' style="margin-bottom: 50px;">
-            <form action='/gerenciamento/enviarEquipe/' method='post'>
-                <div class="row">
-                    <div class="col-md-2 text-start">
-                        <label class='col-form-label fw-bold'>Início Obra:</label>
-                        <input type='date' class='form-control' name='dtinicio'
-                            value="{{#if projeto.dtinicio}}{{projeto.dtinicio}}{{else}}{{pedido.data}}{{/if}}">
-                        <label class='col-form-label fw-bold'>Final Obra:</label>
-                        <input type='date' class='form-control' name='dtfim'
-                            value="{{#if projeto.dtfim}}{{projeto.dtfim}}{{else}}{{dtfim}}{{/if}}">
+        <form action='/gerenciamento/projeto' method='post' id="form">
+            
+            <input type="hidden" id="salvarObs" name="salvarObs" value="0">
+            <input type="hidden" name="id" value="{{projeto._id}}">
+
+            <div class='mt-4' style="margin-bottom: 50px;">
+                <div style="display: flex;flex-direction: row;justify-content: center;">
+                    <div class="'form-check mt-2">
+                        <input type="hidden" id="checkPaiedRefresh" name="checkPaiedRefresh">
+                        <label class='form-check-label' style="font-size: 16px;margin-top: 5px">Projeto Pago</label>
+                        <input class='form-check-input' type='checkbox' name='checkPago' id='checkPago' {{checkPay}}
+                            style="transform: scale(2);margin-left: 5px;" 
+                             onclick='verifyCheck("checkPago","checkPaiedRefresh","form")' />
                     </div>
-                    <div class="col-md-7 text-start">
-                        <input type="hidden" name='id' value="{{projeto._id}}">
-                        <div style="margin-left: 100px;margin-top: 50px;">
-                            <div style="display: flex;" class="text-center">
-                                <label class="mt-2 fw-bold" style="font-size: 20px;">Instalador: </label>
-                                <select class='form-select' name='instalador' style="width: 600px;margin-left: 10px;">
-                                    {{#if ins}}
-                                    <option value="{{ins._id}}">{{ins.nome}}</option>
-                                    {{/if}}
-                                    {{#each instaladores}}
-                                    <option value="{{_id}}">{{nome}}</option>
-                                    {{/each}}
-                                </select>
-                                <a href="/gerenciamento/vermais" class="btn btn-primary d-flex items-align-center"
-                                    style="margin-left: 10px"><i class="bi bi-calendar2"></i></a>
-                                <button type="submit" style="margin-left: 10px" class={{#if projeto.execucao}}{{#if
-                                    projeto.parado}}"btn btn-primary"{{else}}"btn btn-warning"{{/if}}{{else}}"btn
-                                    btn-primary"{{/if}}><i
-                                        class='{{#if projeto.execucao}}{{#if projeto.parado}}bi bi-arrow-right-circle{{else}}bi bi-stop-circle{{/if}}{{else}}bi bi-arrow-right-circle{{/if}}'></i></a>
-                            </div>
-                        </div>
+                    <div class="'form-check mt-2" style="width: 30rem;">
+                        <input type="hidden" id="checkAuthRefresh" name="checkAuthRefresh">
+                        <label class='form-check-label' style="font-size: 16px;margin-top: 5px;">Autorizar
+                            Projeto</label>
+                        <input class='form-check-input' type='checkbox' name='checkAuth' id="checkAuth" {{checkAuth}}
+                            style="transform: scale(2);margin-left: 5px;"
+                            onclick='verifyCheck("checkAuth","checkAuthRefresh","form")' />
                     </div>
-                    {{#if crm}}
-                    <div class="col-md-3 text-end">
-                        <div class="btn-group gap-2">
-                            <div class="'form-check mt-2">
-                                <label class='form-check-label' style="font-size: 16px;margin-top: 5px">Autorizar
-                                    Projeto</label>
-                                <input class='form-check-input' type='checkbox' name='checkAuth' {{checkAuth}}
-                                    style="transform: scale(2);margin-left: 5px;"
-                                    onclick='window.location.href="/gerenciamento/authprj/{{projeto._id}}"'>
-                            </div>
-                            <a data-bs-toggle="modal" data-bs-target='#anexos' class="btn btn-primary"
-                                style="margin-left: 20px"><i class="bi bi-calendar-check"></i></a>
-                        </div>
-                    </div>
-                    {{/if}}
+                    {{!-- <a data-bs-toggle="modal" data-bs-target='#anexos' class="btn btn-primary"
+                        style="margin-left: 20px"><i class="bi bi-calendar-check justtify-align-right"></i></a> --}}
                 </div>
-            </form>
-            <hr>
-            {{#if projeto.solar}}
-            <form action='/gerenciamento/projeto' method='post'>
-                <input type="hidden" name="id" value="{{projeto._id}}">
+                <hr>
                 <div class="row">
                     <div class="col">
                         <div class="row">
@@ -168,7 +136,7 @@
                                 <label class='col-form-label col-form-label-sm mb-1'>Projeto Postado:</label><br>
                                 <label class='col-form-label col-form-label-sm mb-1'>Vistoria Solicitada:</label><br>
                                 <label class='col-form-label col-form-label-sm mb-1'>Vistoria Aprovada:</label><br>
-                                <label class='col-form-label col-form-label-sm'>Troca do Medidor:</label>
+                                <label class='col-form-label col-form-label-sm '>Troca do Medidor:</label>
                             </div>
                             <div class="col">
                                 <label class='col-form-label fw-bold mb-1'>Entrega</label><br>
@@ -206,11 +174,12 @@
                         <div class="card">
                             <div class="card-body">
                                 <div style="flex">
+                                    <input type="hidden" name="insertObs" id="insertObs" value="false">
                                     <label style="width: 85%;" class="h6 fw-bold">Observação do Projeto</label>
                                     <a class="btn btn-sm" id='btnovo' onclick="novoVoltar()">Novo</a>
                                 </div>
-                                <textarea class='form-control' readonly name="obsprojetista" id="obstext"
-                                    cols="70" rows="5">{{projeto.obsprojetista}}</textarea>
+                                <textarea class='form-control' readonly name="obsprojetista" id="obstext" cols="70"
+                                    rows="5">{{projeto.obsprojetista}}</textarea>
                             </div>
                         </div>
                     </div>
@@ -218,8 +187,7 @@
                         <button type="submit" style="height: 190px;" class='btn btn-sm btn-success mt-2'>Salvar</button>
                     </div>
                 </div>
-            </form>
-            {{/if}}
-        </div>
+            </div>
+        </form>
     </div>
 </div>

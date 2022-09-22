@@ -16,6 +16,13 @@ require('../model/AtividadesPadrao')
 require('../model/Parametros')
 require('../model/Componente')
 require('../model/Mensagem')
+
+
+//projectFollow = require('../controller/projectFollow');
+//projectFollow = require('../controller/projectFollow');
+var projectFollow = require('../controllers/projectFollow');
+
+
 require('dotenv').config()
 
 const { ehAdmin } = require('../helpers/ehAdmin')
@@ -30,9 +37,9 @@ const xl = require('excel4node')
 var excel = require('exceljs')
 //const {Client, TextContent} = require('@zenvia/sdk');
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID
-const authToken = process.env.TWILIO_AUTH_TOKEN
-const client = require('twilio')(accountSid, authToken)
+// const accountSid = process.env.TWILIO_ACCOUNT_SID
+// const authToken = process.env.TWILIO_AUTH_TOKEN
+// const client = require('twilio')(accountSid, authToken)
 
 const Usuario = mongoose.model('usuario')
 const Acesso = mongoose.model('acesso')
@@ -63,6 +70,7 @@ const comparaNum = require('../resources/comparaNumeros')
 const listaFotos = require('../resources/listaFotos')
 const diferencaDias = require('../resources/diferencaDias')
 const buscaPrimeira = require('../resources/buscaPrimeira')
+const projectFollowService = require('../controllers/projectFollow').default
 
 var credentials = new aws.SharedIniFileCredentials({ profile: 'vimmusimg' })
 aws.config.credentials = credentials
@@ -79,22 +87,6 @@ const upload = multer({
     })
 })
 
-async function salvarObservacao(projeto, obsprojetista, id, pessoa) {
-    let pessoas = await Pessoa.findById(pessoa);
-    let nome_pessoa = pessoas.nome;
-    if (obsprojetista != '') {
-        var time = String(new Date(Date.now())).substring(16, 21);
-        var newdate = dataMensagem(dataHoje());
-        if (naoVazio(projeto.obsprojetista)) {
-            oldtext = projeto.obsprojetista;
-        } else {
-            oldtext = '';
-        }
-        console.log(oldtext)
-        var newtext = `[${newdate} - ${time}] por ${nome_pessoa}` + '\n' + obsprojetista + '\n' + oldtext;
-        await Projeto.updateOne({ _id: id }, { $set: { obsprojetista: newtext } });
-    }
-}
 
 router.get('/obsinstalacao/:id', ehAdmin, async (req, res) => {
     let observacao;
@@ -3938,185 +3930,15 @@ router.get('/ganho/:id', ehAdmin, (req, res) => {
 })
 
 router.post('/projeto', ehAdmin, async (req, res) => {
-    const { _id } = req.user;
+
     const { pessoa } = req.user;
 
-    var checkapr = false
-    var checkpost = false
-    var checksoli = false
-    console.log(req.body.id)
-    Projeto.findOne({ _id: req.body.id }).then((projeto) => {
+    await projectFollow(pessoa, req.body.id, req.body.dataPost, req.body.checkPost, req.body.dataSoli, 
+    req.body.checkSoli, req.body.dataApro, req.body.checkApro, req.body.dataTroca, req.body.checkTroca,
+    req.body.insertObs,req.body.obsprojetista, req.body.checkPago, req.body.checkPaiedRefresh, req.body.checkAuth,
+    req.body.checkAuthRefresh);
 
-        if (naoVazio(projeto.dataPost)) {
-            checkpost = true
-        }
-
-        if (naoVazio(projeto.dataSoli)) {
-            checksoli = true
-        }
-
-        if (naoVazio(projeto.dataApro)) {
-            checkapr = true
-        }
-
-        if (req.body.checkPost != null) {
-            projeto.dataPost = dataHoje()
-        } else {
-            projeto.dataPost = req.body.dataPost
-        }
-
-        if (req.body.checkSoli != null) {
-            projeto.dataSoli = dataHoje()
-        } else {
-            projeto.dataSoli = req.body.dataSoli
-        }
-
-        if (req.body.checkApro != null) {
-            projeto.dataApro = dataHoje()
-        } else {
-            projeto.dataApro = req.body.dataApro
-        }
-
-        if (req.body.checkTroca != null) {
-            projeto.dataTroca = dataHoje()
-        } else {
-            projeto.dataTroca = req.body.dataTroca
-        }
-
-        projeto.save().then(async () => {
-            var projetoobs = await Projeto.findById(req.body.id).lean();
-            salvarObservacao(projetoobs, req.body.obsprojetista, req.body.id, pessoa);
-            if (checkpost == false && naoVazio(req.body.dataPost)) {
-                // console.log('postado')
-                Cliente.findOne({ _id: projeto.cliente }).then((cliente) => {
-                    Acesso.findOne({ pessoa: projeto.vendedor, notvis: 'checked' }).then((acesso) => {
-                        if (naoVazio(acesso)) {
-                            Pessoa.findOne({ _id: projeto.vendedor }).then((vendedor) => {
-                                // console.log('vendedor.celular=>' + vendedor.celular)
-                                var mensagem = 'Olá ' + vendedor.nome + ',' + '\n' +
-                                    'O projeto ' + projeto.seq + ' do cliente ' + cliente.nome + ' foi postado.' + '\n' +
-                                    'Acompanhe a proposta acessando: https://integracao.vimmus.com.br/gerenciamento/orcamento/' + projeto._id + '.'
-                                // console.log(mensagem)
-                                client.messages
-                                    .create({
-                                        body: mensagem,
-                                        from: 'whatsapp:+554991832978',
-                                        to: 'whatsapp:+55' + vendedor.celular
-                                    })
-                                    .then((message) => {
-                                        req.flash('success_msg', 'Projeto atualizado com sucesso')
-                                        res.redirect('/gerenciamento/projeto/' + req.body.id)
-                                    }).done()
-
-                            }).catch(() => {
-                                req.flash('error_msg', 'Falha ao encontrar o vendedor.')
-                                res.redirect('/gerenciamento/projeto/' + req.params.id)
-                            })
-                        } else {
-                            req.flash('success_msg', 'Projeto atualizado com sucesso')
-                            res.redirect('/gerenciamento/projeto/' + req.body.id)
-                        }
-                    }).catch(() => {
-                        req.flash('error_msg', 'Falha ao encontrar o acesso.')
-                        res.redirect('/gerenciamento/projeto/' + req.params.id)
-                    })
-                }).catch(() => {
-                    req.flash('error_msg', 'Falha ao encontrar o cliente.')
-                    res.redirect('/gerenciamento/projeto/' + req.body.id)
-                })
-            } else {
-                if (checksoli == false && naoVazio(req.body.dataSoli)) {
-                    // console.log('solicitado')
-                    Cliente.findOne({ _id: projeto.cliente }).then((cliente) => {
-                        Acesso.findOne({ pessoa: projeto.vendedor, notvis: 'checked' }).then((acesso) => {
-                            if (naoVazio(acesso)) {
-                                Pessoa.findOne({ _id: projeto.vendedor }).then((vendedor) => {
-                                    // console.log('vendedor.celular=>' + vendedor.celular)
-                                    var mensagem = 'Olá ' + vendedor.nome + ',' + '\n' +
-                                        'A vistoria da proposta ' + projeto.seq + ' do cliente ' + cliente.nome + ' foi solicitada.' + '\n' +
-                                        'Acompanhe a proposta acessando: https://integracao.vimmus.com.br/gerenciamento/orcamento/' + projeto._id + '.'
-                                    // console.log(mensagem)
-                                    client.messages
-                                        .create({
-                                            body: mensagem,
-                                            from: 'whatsapp:+554991832978',
-                                            to: 'whatsapp:+55' + vendedor.celular
-                                        })
-                                        .then((message) => {
-                                            req.flash('success_msg', 'Projeto atualizado com sucesso')
-                                            res.redirect('/gerenciamento/projeto/' + req.body.id)
-                                        }).done()
-
-                                }).catch(() => {
-                                    req.flash('error_msg', 'Falha ao encontrar o vendedor.')
-                                    res.redirect('/gerenciamento/projeto/' + req.params.id)
-                                })
-                            } else {
-                                req.flash('success_msg', 'Projeto atualizado com sucesso')
-                                res.redirect('/gerenciamento/projeto/' + req.body.id)
-                            }
-                        }).catch(() => {
-                            req.flash('error_msg', 'Falha ao encontrar o acesso.')
-                            res.redirect('/gerenciamento/projeto/' + req.params.id)
-                        })
-                    }).catch(() => {
-                        req.flash('error_msg', 'Falha ao encontrar o cliente.')
-                        res.redirect('/gerenciamento/projeto/' + req.params.id)
-                    })
-
-                } else {
-                    if (checkapr == false && naoVazio(req.body.dataApro)) {
-                        // console.log('aprovado')
-                        Cliente.findOne({ _id: projeto.cliente }).then((cliente) => {
-                            Acesso.findOne({ pessoa: projeto.vendedor, notvis: 'checked' }).then((acesso) => {
-                                if (naoVazio(acesso)) {
-                                    Pessoa.findOne({ _id: projeto.vendedor }).then((vendedor) => {
-                                        // console.log('vendedor.celular=>' + vendedor.celular)
-                                        var mensagem = 'Olá ' + vendedor.nome + ',' + '\n' +
-                                            'A vistoria da proposta ' + projeto.seq + ' do cliente ' + cliente.nome + ' foi aprovada.' + '\n' +
-                                            'Acompanhe a proposta acessando: https://integracao.vimmus.com.br/gerenciamento/orcamento/' + projeto._id + '.'
-                                        // console.log(mensagem)
-                                        client.messages
-                                            .create({
-                                                body: mensagem,
-                                                from: 'whatsapp:+554991832978',
-                                                to: 'whatsapp:+55' + vendedor.celular
-                                            })
-                                            .then((message) => {
-                                                req.flash('success_msg', 'Projeto atualizado com sucesso')
-                                                res.redirect('/gerenciamento/projeto/' + req.body.id)
-                                            }).done()
-
-                                    }).catch(() => {
-                                        req.flash('error_msg', 'Falha ao encontrar o vendedor.')
-                                        res.redirect('/gerenciamento/projeto/' + req.params.id)
-                                    })
-                                } else {
-                                    req.flash('success_msg', 'Projeto atualizado com sucesso')
-                                    res.redirect('/gerenciamento/projeto/' + req.body.id)
-                                }
-                            }).catch(() => {
-                                req.flash('error_msg', 'Falha ao encontrar o acesso.')
-                                res.redirect('/gerenciamento/projeto/' + req.params.id)
-                            })
-                        }).catch(() => {
-                            req.flash('error_msg', 'Falha ao encontrar o cliente.')
-                            res.redirect('/gerenciamento/projeto/' + req.params.id)
-                        })
-                    } else {
-                        req.flash('success_msg', 'Projeto atualizado com sucesso')
-                        res.redirect('/gerenciamento/projeto/' + req.body.id)
-                    }
-                }
-            }
-        }).catch((err) => {
-            req.flash('error_msg', 'Falha ao salvar o projeto.')
-            res.redirect('/gerenciamento/projeto/' + req.body.id)
-        })
-    }).catch(() => {
-        req.flash('error_msg', 'Falha ao encontrar o projeto.')
-        res.redirect('/gerenciamento/projeto/' + req.params.id)
-    })
+    res.redirect('/gerenciamento/projeto/' + req.body.id);
 })
 
 router.post('/enviarEquipe/', ehAdmin, async (req, res) => {
@@ -4958,42 +4780,6 @@ router.get('/entrega/:id', ehAdmin, (req, res) => {
     }).catch(() => {
         req.flash('error_msg', 'Falha ao encontrar o projeto.')
         res.redirect('/gerenciamento/instalacao/' + req.params.id)
-    })
-})
-
-router.get('/payprj/:id', ehAdmin, (req, res) => {
-    Projeto.findOne({ _id: req.params.id }).then((projeto) => {
-        // console.log('projeto.autorizado=>' + projeto.autorizado)
-        if (projeto.pago == true) {
-            projeto.pago = false
-        } else {
-            projeto.pago = true
-        }
-        projeto.save().then(() => {
-            req.flash('success_msg', 'Projeto pago.')
-            res.redirect('/gerenciamento/projeto/' + req.params.id)
-        })
-    }).catch((err) => {
-        req.flash('error_msg', 'Falha ao encontrar o projeto')
-        res.redirect('/relatorios/consulta')
-    })
-})
-
-router.get('/authprj/:id', ehAdmin, (req, res) => {
-    Projeto.findOne({ _id: req.params.id }).then((projeto) => {
-        // console.log('projeto.autorizado=>' + projeto.autorizado)
-        if (projeto.autorizado == true) {
-            projeto.autorizado = false
-        } else {
-            projeto.autorizado = true
-        }
-        projeto.save().then(() => {
-            req.flash('success_msg', 'Projeto autorizado pelo projetista.')
-            res.redirect('/gerenciamento/projeto/' + req.params.id)
-        })
-    }).catch((err) => {
-        req.flash('error_msg', 'Falha ao encontrar o projeto')
-        res.redirect('/relatorios/consulta')
     })
 })
 

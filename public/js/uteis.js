@@ -905,11 +905,22 @@ function novoVoltar() {
     if (status == 'Novo') {
         $('#obstext').val('');
         $('#btnovo').text('Voltar');
+        $('#insertObs').val(true);
         $('#obstext').prop('readonly', false)
     } else {
         window.location.reload();
     }
-}      
+}   
+
+function verifyCheck(field,refreh,form) {
+    var check = $('#'+field);
+    $('#'+refreh).val(check.is(':checked'));
+    handleSubmit(form);
+}
+
+function handleSubmit(form) {
+    $('#'+form).submit();
+}
 
 $(document).ready(function () {
     
