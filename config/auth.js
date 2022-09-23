@@ -17,8 +17,6 @@ module.exports = (passport) => {
                     if (!user) {
                         return done(null, false, { message: "Esta conta não existe" })
                     } else {
-                        // console.log('acesso')
-                        // console.log(user)
                         bcrypt.compare(senha, user.senha, (erro, batem) => {
                             if (batem) {
                                 return done(null, user)
@@ -44,11 +42,9 @@ module.exports = (passport) => {
 
     passport.serializeUser((usuario, done) => {
         done(null, usuario.id)
-        // console.log(usuario.id)
     })
 
     passport.deserializeUser((_id, done) => {
-        // console.log(_id)
         Usuario.findOne({_id: _id}).then((usuario)=>{
             if (!usuario){
                 Acesso.findById(_id, (err, usuario) => {
