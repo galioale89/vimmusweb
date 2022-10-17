@@ -21,7 +21,6 @@ label {
   font-size: 10px;
 }
 
-.container,
 .container-fluid,
 .container-xl,
 .container-lg,
@@ -4211,7 +4210,7 @@ label {
    License: none (public domain)
 */
 html, body, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
@@ -4853,9 +4852,9 @@ section#contact .side-img {
   background-position: -130px center;
 }
 section#contact .title-section {
-  color: #07072D;
+  color: white;
   font-size: 2rem;
-  line-height: 3rem;
+  line-height: 1rem;
   font-weight: 700;
   padding-bottom: 21px;
 }
